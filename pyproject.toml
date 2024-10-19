@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MultiOmics"
+version = "0.0.1"
+description = "A multi-omics analytic framework to study RNA dynamics"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT License" }
+authors = [
+    { name = "Abe Arab", email = "abarbiology@gamil.com" }
+]
+maintainers = [
+    { name = "Abe Arab", email = "abarbiology@gamil.com" }
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3"
+]
+urls = { "Homepage" = "https://github.com/abearab/MultiOmics" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
