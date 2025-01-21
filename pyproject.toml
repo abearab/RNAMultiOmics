@@ -3,7 +3,7 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "MultiOmics"
+name = "RNAMultiOmics"
 version = "0.0.1"
 description = "A multi-omics analytic framework to study RNA dynamics"
 readme = "README.md"
@@ -20,7 +20,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3"
 ]
-urls = { "Homepage" = "https://github.com/abearab/MultiOmics" }
+urls = { "Homepage" = "https://github.com/abearab/RNAMultiOmics" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
