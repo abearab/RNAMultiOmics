@@ -1,6 +1,8 @@
+import os
 import polars as pl
 import biobear as bb
-
+import anndata as ad
+import pandas as pd
 from glob import glob
 from pytximport import tximport
 
@@ -67,6 +69,48 @@ def load_salmon_quants(quants_dir, pattern, GTF, verbose=False):
     rnaseq_data.var = gene2name.set_index('gene_id').loc[rnaseq_data.var.index,:]
 
     return rnaseq_data
+
+
+def load_squab_counts(squab_dir, verbose=False):
+    """Read squab output files and return anndata object
+    load squab output files from `squab_dir` for raw counts, FPKM and TPM
+    """
+    # Load raw counts
+    if verbose: print('Loading raw counts...')
+    raw_counts = _read_squab_files(squab_dir, ".counts.tsv", index_col=0, header=None, comment="_")
+    
+    # Load FPKM
+    if verbose: print('Loading FPKM normalized counts...')
+    fpkm = _read_squab_files(squab_dir, ".counts.fpkm.tsv", index_col=0, header=None, skiprows=3)
+
+    # Load TPM
+    if verbose: print('Loading TPM normalized counts...')
+    tpm = _read_squab_files(squab_dir, ".counts.tpm.tsv", index_col=0, header=None, skiprows=3)
+
+    # Create anndata object
+    if verbose: print('Creating anndata object...')
+    adata = ad.AnnData(X=raw_counts.T)
+    adata.layers["fpkm"] = fpkm.values.T
+    adata.layers["tpm"] = tpm.values.T
+
+    if verbose: print(f'counts for {adata.shape[0]} features and {adata.shape[1]} samples loaded successfully.')
+
+    return adata
+
+
+def _read_squab_files(squab_dir, suffix, **kwargs):
+    files = glob(os.path.join(squab_dir, f"*{suffix}"))
+    dfs = []
+    for f in files:
+        sample_id = os.path.basename(f).replace(suffix, "")
+        df = pd.read_csv(f, sep="\t", **kwargs)
+        df.columns = [sample_id]
+        df.index.name = "gene_id"
+        dfs.append(df)
+
+    out = pd.concat(dfs, axis=1)
+
+    return out
 
 
 def _extract_attribute(attribute, key):
