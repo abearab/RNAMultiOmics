@@ -93,7 +93,7 @@ def load_squab_counts(squab_dir, verbose=False):
     adata.layers["fpkm"] = fpkm.values.T
     adata.layers["tpm"] = tpm.values.T
 
-    if verbose: print(f'counts for {adata.shape[0]} features and {adata.shape[1]} samples loaded successfully.')
+    if verbose: print(f'counts for {adata.shape[1]} features and {adata.shape[0]} samples loaded successfully.')
 
     return adata
 
