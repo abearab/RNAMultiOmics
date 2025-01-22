@@ -6,14 +6,15 @@ from class_fromGTF import get_fromGTF_class
 
 
 def get_novel_ID(fn_novel):
-fromGTF, event_type = get_fromGTF_class(fn_novel)
-ID_novel = set()
-with open(fn_novel, "r") as f:
-    header = f.readline()
-    for line in f:
-        x = fromGTF(line)
-        ID_novel.update({x.uniqID})
-    return ID_novel
+    #TODO: reimplement this
+    fromGTF, event_type = get_fromGTF_class(fn_novel)
+    ID_novel = set()
+    with open(fn_novel, "r") as f:
+        header = f.readline()
+        for line in f:
+            x = fromGTF(line)
+            ID_novel.update({x.uniqID})
+        return ID_novel
 
 
 if __name__ == "__main__":

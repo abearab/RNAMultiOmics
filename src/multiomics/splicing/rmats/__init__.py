@@ -2,7 +2,12 @@
 
 import math
 import numpy as np
-from class_exon import get_exon_class
+
+from class_exon import *
+from class_fromGTF import *
+from extract_PSI_count import *
+from get_novel_ID import *
+from rmats_filtering import *
 
 
 def read_rMATS(fn, readCov, minPSI, maxPSI, sigFDR, sigDeltaPSI, bgFDR, bgWithinGroupDeltaPSI):
