@@ -4,7 +4,11 @@ import numpy as np
 from .class_exon import get_exon_class
 
 
-def read_rMATS(fn, readCov, minPSI, maxPSI, sigFDR, sigDeltaPSI, bgFDR, bgWithinGroupDeltaPSI):
+def read_rMATS(
+        fn, readCov=20, minPSI=0.05, maxPSI=0.95, 
+        sigFDR=0.01, sigDeltaPSI=0.05,
+        bgFDR=0.5, bgWithinGroupDeltaPSI=0.2
+        ):
     exon, event_type = get_exon_class(fn)
     filtered_event_list = []
     up_event_list = []
