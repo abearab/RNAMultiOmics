@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from class_exon import get_exon_class
+from .class_exon import get_exon_class
 
 
 def read_rMATS(fn, readCov, minPSI, maxPSI, sigFDR, sigDeltaPSI, bgFDR, bgWithinGroupDeltaPSI):

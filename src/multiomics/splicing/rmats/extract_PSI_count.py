@@ -11,7 +11,7 @@ from __future__ import print_function
 import os, sys
 from datetime import datetime
 
-from class_exon import get_exon_class
+from .class_exon import get_exon_class
 
 
 def extract_PSI_COUNT(fn, od, samples):
