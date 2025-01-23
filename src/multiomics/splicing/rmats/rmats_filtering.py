@@ -2,7 +2,7 @@ import os, sys
 import numpy as np
 import math
 
-from class_exon import exon_SE, exon_RI, exon_AXSS, exon_MXE
+from .class_exon import exon_SE, exon_RI, exon_AXSS, exon_MXE
 
 
 def get_exon_class(fn):

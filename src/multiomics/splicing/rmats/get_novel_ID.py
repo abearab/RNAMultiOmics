@@ -2,7 +2,7 @@
 from __future__ import print_function
 import os, sys
 
-from class_fromGTF import get_fromGTF_class
+from .class_fromGTF import get_fromGTF_class
 
 
 def get_novel_ID(fn_novel):
