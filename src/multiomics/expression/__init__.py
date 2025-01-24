@@ -6,14 +6,7 @@ import pandas as pd
 from glob import glob
 from pytximport import tximport
 
-
-def load_gtf(GTF, verbose=False):
-    session = bb.new_session()
-    gtf_df = session.read_gtf_file(GTF).to_polars()
-
-    if verbose: print('GTF file loaded successfully.')
-    
-    return gtf_df
+from ..load import load_gtf
 
 
 def create_tx2gene(gtf_df, verbose=False):
