@@ -6,43 +6,13 @@ import pandas as pd
 from glob import glob
 from pytximport import tximport
 
-from ..load import load_gtf
-
-
-def create_tx2gene(gtf_df, verbose=False):
-    # Filter for transcripts and create tx2gene DataFrame
-    tx2gene = gtf_df.filter(
-        pl.col('type') == 'transcript'
-    ).with_columns([
-        pl.col('attributes').map_elements(
-            lambda x: _extract_attribute(x, 'transcript_id'), return_dtype=pl.Utf8).alias('transcript_id'),
-        pl.col('attributes').map_elements(
-            lambda x: _extract_attribute(x, 'gene_id'), return_dtype=pl.Utf8).alias('gene_id')
-        # pl.col('attributes').map_elements(lambda x: extract_attribute(x, 'gene_name'), return_dtype=pl.Utf8).alias('gene_name')
-    ]).select(['transcript_id','gene_id']).to_pandas()
-
-    if verbose: print('tx2gene mapping created successfully.')
-
-    return tx2gene
-
-
-def create_gene2name(gtf_df, verbose=False):
-    # Filter for genes and create gene2name DataFrame
-    gene2name = gtf_df.filter(
-        pl.col('type') == 'gene'
-    ).with_columns([
-        pl.col('attributes').map_elements(
-            lambda x: _extract_attribute(x, 'gene_id'), return_dtype=pl.Utf8).alias('gene_id'),
-        pl.col('attributes').map_elements(
-            lambda x: _extract_attribute(x, 'gene_name'), return_dtype=pl.Utf8).alias('gene_name')
-    ]).select(['gene_id','gene_name']).to_pandas()
-
-    if verbose: print('gene2name mapping created successfully.')
-
-    return gene2name
+from .._annotations import load_gtf, create_gene2name, create_tx2gene
 
 
 def load_salmon_quants(quants_dir, pattern, GTF, verbose=False):
+    """Load salmon quantification files and return anndata object
+    load salmon quantification files from `quants_dir` with `pattern` for quant.sf files
+    """
     if type(GTF) == str:
         gtf_df = load_gtf(GTF, verbose)
     elif type(GTF) == pl.DataFrame or type(GTF) == pd.DataFrame:
@@ -64,10 +34,18 @@ def load_salmon_quants(quants_dir, pattern, GTF, verbose=False):
     return rnaseq_data
 
 
-def load_squab_counts(squab_dir, verbose=False):
+def load_squab_counts(squab_dir, GTF, verbose=False):
     """Read squab output files and return anndata object
     load squab output files from `squab_dir` for raw counts, FPKM and TPM
     """
+    if type(GTF) == str:
+        gtf_df = load_gtf(GTF, verbose)
+    elif type(GTF) == pl.DataFrame or type(GTF) == pd.DataFrame:
+        gtf_df = GTF
+        if verbose: print('Using provided GTF DataFrame.')
+    
+    gene2name = create_gene2name(gtf_df, verbose)
+
     # Load raw counts
     if verbose: print('Loading raw counts...')
     raw_counts = _read_squab_files(squab_dir, ".counts.tsv", index_col=0, header=None, comment="_")
@@ -85,6 +63,8 @@ def load_squab_counts(squab_dir, verbose=False):
     adata = ad.AnnData(X=raw_counts.T)
     adata.layers["fpkm"] = fpkm.values.T
     adata.layers["tpm"] = tpm.values.T
+
+    adata.var = gene2name.set_index('gene_id').loc[adata.var.index,:]
 
     if verbose: print(f'counts for {adata.shape[1]} features and {adata.shape[0]} samples loaded successfully.')
 
@@ -104,9 +84,3 @@ def _read_squab_files(squab_dir, suffix, **kwargs):
     out = pd.concat(dfs, axis=1)
 
     return out
-
-
-def _extract_attribute(attribute, key):
-    out = dict([(d['key'],d['value']) for d in list(attribute)])
-
-    return out[key]
