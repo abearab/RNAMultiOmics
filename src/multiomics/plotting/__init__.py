@@ -1,2 +1,2 @@
-from . import volcano
-from . import rank_plot
+from ._volcano import plot_volcano
+from ._rank_plot import rank_plot
