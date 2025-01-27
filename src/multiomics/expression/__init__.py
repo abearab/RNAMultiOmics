@@ -39,12 +39,12 @@ def load_squab_counts(squab_dir, GTF, verbose=False):
     load squab output files from `squab_dir` for raw counts, FPKM and TPM
     """
     if type(GTF) == str:
-        gtf_df = load_gtf(GTF, verbose)
+        gtf_df = load_gtf(GTF, output_type='pl', verbose=verbose)
     elif type(GTF) == pl.DataFrame or type(GTF) == pd.DataFrame:
         gtf_df = GTF
         if verbose: print('Using provided GTF DataFrame.')
     
-    gene2name = create_gene2name(gtf_df, verbose)
+    gene2name = create_gene2name(gtf_df, verbose=verbose)
 
     # Load raw counts
     if verbose: print('Loading raw counts...')
