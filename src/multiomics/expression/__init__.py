@@ -14,13 +14,13 @@ def load_salmon_quants(quants_dir, pattern, GTF, verbose=False):
     load salmon quantification files from `quants_dir` with `pattern` for quant.sf files
     """
     if type(GTF) == str:
-        gtf_df = load_gtf(GTF, verbose)
+        gtf_df = load_gtf(GTF, output_type='pl', verbose=verbose)
     elif type(GTF) == pl.DataFrame or type(GTF) == pd.DataFrame:
         gtf_df = GTF
         if verbose: print('Using provided GTF DataFrame.')
     
-    tx2gene = create_tx2gene(gtf_df, verbose)
-    gene2name = create_gene2name(gtf_df, verbose)
+    tx2gene = create_tx2gene(gtf_df, verbose=verbose)
+    gene2name = create_gene2name(gtf_df, verbose=verbose)
     
     rnaseq_data = tximport(
         glob(f'{quants_dir}/{pattern}/quant.sf'),
