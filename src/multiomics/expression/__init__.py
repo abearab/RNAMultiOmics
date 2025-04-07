@@ -4,7 +4,7 @@ import biobear as bb
 import anndata as ad
 import pandas as pd
 from glob import glob
-from pytximport import tximport
+from pymportx import salmon
 
 from .._annotations import load_gtf, create_gene2name, create_tx2gene
 
@@ -22,10 +22,10 @@ def load_salmon_quants(quants_dir, pattern, GTF, verbose=False):
     tx2gene = create_tx2gene(gtf_df, verbose=verbose)
     gene2name = create_gene2name(gtf_df, verbose=verbose)
     
-    rnaseq_data = tximport(
+    rnaseq_data = salmon.read_salmon(
         glob(f'{quants_dir}/{pattern}/quant.sf'),
-        "salmon",
-        tx2gene,
+        tx_out=False,
+        tx2gene=tx2gene,
     )
     
     rnaseq_data.obs.index = [x.replace(f'{quants_dir}/','').replace('/quant.sf','') for x in rnaseq_data.obs.index]
