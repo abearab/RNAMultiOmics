@@ -6,7 +6,8 @@ This script shows how to use the enrichment analysis modules for:
 1. Over-representation analysis (ORA)
 2. Gene set enrichment analysis (GSEA) 
 3. GO enrichment analysis
-4. Custom statistical tests
+4. PAGE (Pathway Analysis of Gene Expression)
+5. Custom statistical tests
 
 Usage:
     python examples/enrichment_analysis_example.py
@@ -243,6 +244,54 @@ def main():
         print("✓ Advanced GO analysis - available with goatools")
     else:
         print("○ Advanced GO analysis - install goatools for additional functionality")
+    
+    # PAGE Analysis (if available)
+    print("\n" + "="*50)
+    print("Testing PAGE (Pathway Analysis of Gene Expression)")
+    print("="*50)
+    
+    try:
+        from multiomics.enrichment.pypage_wrapper import check_pypage_availability, run_page
+        
+        if check_pypage_availability():
+            print("✓ pypage is available for PAGE analysis")
+            
+            try:
+                print("\nRunning PAGE analysis...")
+                print("PAGE uses mutual information to identify informative pathways")
+                
+                # Run PAGE analysis on a subset of data for demonstration
+                subset_expression = expression_data.iloc[:20, :]  # First 20 genes
+                subset_gene_sets = {k: [g for g in v if g in subset_expression.index] 
+                                  for k, v in gene_sets.items()}
+                subset_gene_sets = {k: v for k, v in subset_gene_sets.items() if len(v) >= 2}
+                
+                if subset_gene_sets:
+                    page_results = run_page(
+                        expression_data=subset_expression,
+                        gene_sets=subset_gene_sets,
+                        n_shuffle=100,  # Reduced for demo
+                        alpha=0.05,
+                        n_bins=5,
+                        verbose=False
+                    )
+                    
+                    print(f"\nPAGE Results (top 5):")
+                    print(page_results[['Term', 'MI', 'Informative', 'N_shared']].head())
+                    
+                    informative_count = page_results['Informative'].sum()
+                    print(f"\nFound {informative_count} informative pathways using mutual information")
+                else:
+                    print("No suitable gene sets for PAGE analysis in subset")
+                    
+            except Exception as e:
+                print(f"PAGE analysis failed: {e}")
+        else:
+            print("○ PAGE analysis - install bio-pypage for functionality")
+            print("  pip install bio-pypage")
+            
+    except ImportError:
+        print("○ PAGE analysis - install bio-pypage for functionality")
     
     print("\nThe enrichment analysis module provides a comprehensive framework for")
     print("pathway and gene set enrichment analysis that can work with different")

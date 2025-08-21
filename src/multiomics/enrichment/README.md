@@ -7,12 +7,14 @@ This module provides comprehensive gene set enrichment analysis functionality fo
 ### Core Statistical Functions
 - **Over-Representation Analysis (ORA)**: Fisher's exact test and hypergeometric test for gene set enrichment
 - **Ranked Gene Analysis**: Create ranked gene lists from expression data for GSEA
+- **PAGE Analysis**: Pathway Analysis of Gene Expression using mutual information
 - **Statistical Testing**: Multiple testing correction using FDR (Benjamini-Hochberg)
 - **Utility Functions**: Gene list preparation, cleaning, and formatting
 
 ### Integration with Popular Tools
 - **gseapy**: GSEA, pre-ranked GSEA, and GO enrichment analysis
 - **goatools**: Advanced GO enrichment analysis with custom gene associations
+- **pypage**: PAGE (Pathway Analysis of Gene Expression) using mutual information
 - **Custom implementations**: Statistical tests that work with basic Python libraries
 
 ## Installation
@@ -31,6 +33,9 @@ pip install gseapy
 
 # For advanced GO analysis with custom databases
 pip install goatools
+
+# For PAGE (Pathway Analysis of Gene Expression) algorithm
+pip install bio-pypage
 
 # For extended bioinformatics functionality
 pip install bioservices
@@ -104,6 +109,38 @@ go_results = run_go_enrichment(
 )
 ```
 
+### PAGE Analysis (Pathway Analysis of Gene Expression)
+
+```python
+from multiomics.enrichment import run_page
+
+# Expression data (genes x samples) 
+expression_data = pd.DataFrame({
+    'Sample1': [2.1, 1.5, 0.8, 3.2, 1.1],
+    'Sample2': [2.3, 1.8, 0.9, 3.1, 1.3], 
+    'Sample3': [1.9, 1.2, 0.7, 3.5, 0.9]
+}, index=['GENE1', 'GENE2', 'GENE3', 'GENE4', 'GENE5'])
+
+# Gene sets for pathways
+gene_sets = {
+    'Metabolic_Pathway': ['GENE1', 'GENE2', 'GENE3'],
+    'Signaling_Pathway': ['GENE2', 'GENE4', 'GENE5'],
+    'Transport_Pathway': ['GENE1', 'GENE4']
+}
+
+# Run PAGE analysis (requires bio-pypage)
+page_results = run_page(
+    expression_data=expression_data,
+    gene_sets=gene_sets,
+    n_shuffle=1000,    # Number of permutation tests
+    alpha=0.01,        # Significance threshold
+    n_bins=10,         # Expression bins
+    verbose=True
+)
+
+print(page_results[['Term', 'MI', 'P_value', 'Informative']])
+```
+
 ### Utility Functions
 
 ```python
@@ -125,6 +162,7 @@ src/multiomics/enrichment/
 ├── gsea.py             # GSEA and ranked analysis functions
 ├── go_analysis.py      # GO enrichment analysis
 ├── ora.py              # Over-representation analysis
+├── pypage_wrapper.py   # PAGE analysis wrapper
 └── _utils.py           # Utility functions
 ```
 
@@ -145,6 +183,13 @@ src/multiomics/enrichment/
 - `run_go_enrichment()`: GO enrichment with multiple backends
 - `run_go_enrichment_gseapy()`: GO enrichment using gseapy
 - `run_go_enrichment_goatools()`: GO enrichment using goatools
+
+### PAGE Analysis Functions
+- `run_page()`: PAGE analysis using mutual information
+- `create_expression_profile_from_dataframe()`: Convert DataFrame to pypage format
+- `create_gene_sets_from_dict()`: Convert gene sets to pypage format
+- `check_pypage_availability()`: Check if pypage is installed
+- `get_pypage_info()`: Get pypage installation information
 
 ### Utility Functions
 - `prepare_gene_list()`: Clean and prepare gene lists
@@ -173,10 +218,11 @@ The module is designed to work gracefully with different dependency configuratio
    - GSEA analysis
    - GO enrichment
 
-3. **Advanced Mode**: Add goatools for specialized GO analysis
+3. **Advanced Mode**: Add goatools and pypage for specialized analysis
    - Custom GO databases
    - Advanced GO statistics
    - Local GO analysis
+   - PAGE analysis with mutual information
 
 ## Gene Set Databases
 
@@ -202,6 +248,7 @@ If you use this module in your research, please cite:
 - The RNAMultiOmics package
 - gseapy if used: Fang et al. (2016) Bioinformatics
 - goatools if used: Klopfenstein et al. (2018) Scientific Reports
+- pypage if used: https://github.com/goodarzilab/pypage
 
 ## Contributing
 
