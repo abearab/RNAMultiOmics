@@ -11,10 +11,10 @@ import numpy as np
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# Add src directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from gsea import (
+from multiomics.enrichment.gsea import (
     create_ranked_list,
     run_prerank,
     run_gsea,

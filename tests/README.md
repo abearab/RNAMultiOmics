@@ -1,18 +1,19 @@
-# Enrichment Module Tests
+# RNAMultiOmics Test Suite
 
-This directory contains comprehensive unit tests for the multiomics enrichment analysis module. The tests cover all major functionality including Over-Representation Analysis (ORA), Gene Set Enrichment Analysis (GSEA), Gene Ontology (GO) analysis, and Pathway Analysis of Gene Expression (PAGE).
+This directory contains comprehensive unit tests for the RNAMultiOmics package, including enrichment analysis, expression analysis, and other modules. The tests provide extensive coverage for all major functionality including Over-Representation Analysis (ORA), Gene Set Enrichment Analysis (GSEA), Gene Ontology (GO) analysis, and Pathway Analysis of Gene Expression (PAGE).
 
 ## Test Structure
 
 ```
 tests/
 ├── __init__.py              # Test package initialization
-├── test_utils.py            # Tests for utility functions
+├── test_utils.py            # Tests for enrichment utility functions
 ├── test_ora.py              # Tests for Over-Representation Analysis
 ├── test_gsea.py             # Tests for GSEA functionality
 ├── test_go_analysis.py      # Tests for GO enrichment analysis
 ├── test_pypage_wrapper.py   # Tests for PAGE analysis
 ├── run_tests.py             # Test runner script
+├── simple_test.py           # Basic functionality verification
 └── README.md                # This file
 ```
 
@@ -23,11 +24,12 @@ tests/
 Run all tests with the test runner:
 
 ```bash
-# From the tests directory
-python run_tests.py
+# From the repository root
+python tests/run_tests.py
 
-# Or from the enrichment module directory
-python -m tests.run_tests
+# Or run individual test modules
+python -m unittest tests.test_utils
+python -m unittest tests.test_ora
 ```
 
 ### Test Runner Options

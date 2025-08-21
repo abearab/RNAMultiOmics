@@ -1,5 +1,5 @@
 """
-Simple test runner for the enrichment module tests.
+Simple test runner for the RNAMultiOmics package tests.
 
 This script runs basic tests for the available functionality.
 """
@@ -8,50 +8,50 @@ import unittest
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# Add src directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 
 def run_basic_tests():
     """Run basic functionality tests."""
-    print("Running basic enrichment module tests...")
+    print("Running basic RNAMultiOmics package tests...")
     print("=" * 50)
     
     # Test 1: Check if modules can be imported
     print("Test 1: Module imports")
     try:
-        import _utils
-        print("  ✓ _utils module imported successfully")
+        import multiomics.enrichment._utils
+        print("  ✓ multiomics.enrichment._utils module imported successfully")
     except Exception as e:
-        print(f"  ✗ _utils import failed: {e}")
+        print(f"  ✗ multiomics.enrichment._utils import failed: {e}")
         return False
     
     try:
-        import ora
-        print("  ✓ ora module imported successfully")
+        import multiomics.enrichment.ora
+        print("  ✓ multiomics.enrichment.ora module imported successfully")
     except Exception as e:
-        print(f"  ✗ ora import failed: {e}")
+        print(f"  ✗ multiomics.enrichment.ora import failed: {e}")
         return False
     
     try:
-        import gsea
-        print("  ✓ gsea module imported successfully")
+        import multiomics.enrichment.gsea
+        print("  ✓ multiomics.enrichment.gsea module imported successfully")
     except Exception as e:
-        print(f"  ✗ gsea import failed: {e}")
+        print(f"  ✗ multiomics.enrichment.gsea import failed: {e}")
         return False
     
     try:
-        import go_analysis
-        print("  ✓ go_analysis module imported successfully")
+        import multiomics.enrichment.go_analysis
+        print("  ✓ multiomics.enrichment.go_analysis module imported successfully")
     except Exception as e:
-        print(f"  ✗ go_analysis import failed: {e}")
+        print(f"  ✗ multiomics.enrichment.go_analysis import failed: {e}")
         return False
     
     try:
-        import pypage_wrapper
-        print("  ✓ pypage_wrapper module imported successfully")
+        import multiomics.enrichment.pypage_wrapper
+        print("  ✓ multiomics.enrichment.pypage_wrapper module imported successfully")
     except Exception as e:
-        print(f"  ✗ pypage_wrapper import failed: {e}")
+        print(f"  ✗ multiomics.enrichment.pypage_wrapper import failed: {e}")
         return False
     
     # Test 2: Check basic functionality
@@ -60,6 +60,7 @@ def run_basic_tests():
     # Test gene list preparation
     try:
         test_genes = ['gene1', ' GENE2 ', 'Gene3', 'gene1', '']
+        import multiomics.enrichment._utils as _utils
         cleaned = _utils.prepare_gene_list(test_genes)
         print(f"  ✓ Gene list preparation: {len(cleaned)} genes processed")
     except Exception as e:

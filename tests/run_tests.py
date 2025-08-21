@@ -1,7 +1,7 @@
 """
-Test runner for the enrichment module tests.
+Test runner for the RNAMultiOmics package tests.
 
-This script provides a convenient way to run all tests in the enrichment module
+This script provides a convenient way to run all tests in the package
 with proper reporting and optional dependency handling.
 """
 
@@ -10,15 +10,15 @@ import sys
 import os
 import warnings
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# Add src directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # Import test modules
-from tests.test_utils import TestUtils, TestUtilsIntegration
-from tests.test_ora import TestORA, TestORAEdgeCases
-from tests.test_gsea import TestGSEA, TestGSEAIntegration
-from tests.test_go_analysis import TestGOAnalysis, TestGOAnalysisIntegration
-from tests.test_pypage_wrapper import TestPypageWrapper, TestPypageIntegration
+from test_utils import TestUtils, TestUtilsIntegration
+from test_ora import TestORA, TestORAEdgeCases
+from test_gsea import TestGSEA, TestGSEAIntegration
+from test_go_analysis import TestGOAnalysis, TestGOAnalysisIntegration
+from test_pypage_wrapper import TestPypageWrapper, TestPypageIntegration
 
 # Check dependencies
 def check_dependencies():

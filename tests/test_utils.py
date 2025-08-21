@@ -10,10 +10,10 @@ import numpy as np
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# Add src directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from _utils import (
+from multiomics.enrichment._utils import (
     prepare_gene_list,
     clean_gene_name,
     create_ranked_gene_list,

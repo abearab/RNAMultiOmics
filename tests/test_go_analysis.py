@@ -11,10 +11,10 @@ import numpy as np
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# Add src directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from go_analysis import (
+from multiomics.enrichment.go_analysis import (
     run_go_enrichment,
     run_gseapy_go_enrichment,
     get_available_go_libraries,

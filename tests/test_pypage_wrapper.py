@@ -11,10 +11,10 @@ import numpy as np
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# Add src directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from pypage_wrapper import (
+from multiomics.enrichment.pypage_wrapper import (
     run_page,
     create_expression_profile_from_dataframe,
     create_gene_sets_from_dict,
