@@ -50,19 +50,10 @@ def load_squab_counts(squab_dir, GTF, verbose=False):
     if verbose: print('Loading raw counts...')
     raw_counts = _read_squab_files(squab_dir, ".counts.tsv", index_col=0, header=None, comment="_")
     
-    # # Load FPKM
-    # if verbose: print('Loading FPKM normalized counts...')
-    # fpkm = _read_squab_files(squab_dir, ".counts.fpkm.tsv", index_col=0, header=None, skiprows=3)
-
-    # # Load TPM
-    # if verbose: print('Loading TPM normalized counts...')
-    # tpm = _read_squab_files(squab_dir, ".counts.tpm.tsv", index_col=0, header=None, skiprows=3)
-
     # Create anndata object
     if verbose: print('Creating anndata object...')
     adata = ad.AnnData(X=raw_counts.T)
-    # adata.layers["fpkm"] = fpkm.values.T
-    # adata.layers["tpm"] = tpm.values.T
+    adata.layers["raw_counts"] = raw_counts.values.T
 
     adata.var = gene2name.set_index('gene_id').loc[adata.var.index,:]
 
