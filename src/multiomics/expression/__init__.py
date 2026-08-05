@@ -54,6 +54,7 @@ def load_squab_counts(squab_dir, GTF, verbose=False):
     if verbose: print('Creating anndata object...')
     adata = ad.AnnData(X=raw_counts.T)
     adata.layers["raw_counts"] = raw_counts.values.T
+    adata.X = None
 
     adata.var = gene2name.set_index('gene_id').loc[adata.var.index,:]
 
