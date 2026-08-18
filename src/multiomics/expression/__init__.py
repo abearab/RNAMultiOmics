@@ -4,74 +4,48 @@ import biobear as bb
 import anndata as ad
 import pandas as pd
 from glob import glob
-from pymportx import salmon
 
-from .._annotations import load_gtf, create_gene2name, create_tx2gene
+import scanpy as sc
+from pydeseq2.dds import DeseqDataSet
+from pydeseq2.default_inference import DefaultInference
+from pydeseq2.ds import DeseqStats
+
+from ..utils._squab_feat_cnt import load_squab_counts
 
 
-def load_salmon_quants(quants_dir, pattern, GTF, verbose=False):
-    """Load salmon quantification files and return anndata object
-    load salmon quantification files from `quants_dir` with `pattern` for quant.sf files
+def preprocess_counts(adata, method="deseq2", layer="raw_counts", min_counts=1, n_cpus=8, verbose=True):
+    """Normalize counts in anndata object using specified method
     """
-    if type(GTF) == str:
-        gtf_df = load_gtf(GTF, output_type='pl', verbose=verbose)
-    elif type(GTF) == pl.DataFrame or type(GTF) == pd.DataFrame:
-        gtf_df = GTF
-        if verbose: print('Using provided GTF DataFrame.')
-    
-    tx2gene = create_tx2gene(gtf_df, verbose=verbose)
-    gene2name = create_gene2name(gtf_df, verbose=verbose)
-    
-    rnaseq_data = salmon.read_salmon(
-        glob(f'{quants_dir}/{pattern}/quant.sf'),
-        tx_out=False,
-        tx2gene=tx2gene,
-    )
-    
-    rnaseq_data.obs.index = [x.replace(f'{quants_dir}/','').replace('/quant.sf','') for x in rnaseq_data.obs.index]
-    rnaseq_data.var = gene2name.set_index('gene_id').loc[rnaseq_data.var.index,:]
 
-    return rnaseq_data
+    adata.X = adata.layers[layer].copy()
+    if min_counts != None or min_counts > 0:
+        if verbose: print(f'Filtering genes with no counts / low counts (min_counts={min_counts})...')
+        sc.pp.filter_genes(adata, min_counts=min_counts) # filter out genes with no counts
 
+    if method == "deseq2":
+        if verbose: print('Normalizing counts using DESeq2 method...')
 
-def load_squab_counts(squab_dir, GTF, verbose=False):
-    """Read squab output files and return anndata object
-    load squab output files from `squab_dir` for raw counts, FPKM and TPM
-    """
-    if type(GTF) == str:
-        gtf_df = load_gtf(GTF, output_type='pl', verbose=verbose)
-    elif type(GTF) == pl.DataFrame or type(GTF) == pd.DataFrame:
-        gtf_df = GTF
-        if verbose: print('Using provided GTF DataFrame.')
-    
-    gene2name = create_gene2name(gtf_df, verbose=verbose)
+        inference = DefaultInference(n_cpus=n_cpus)
 
-    # Load raw counts
-    if verbose: print('Loading raw counts...')
-    raw_counts = _read_squab_files(squab_dir, ".counts.tsv", index_col=0, header=None, comment="_")
-    
-    # Create anndata object
-    if verbose: print('Creating anndata object...')
-    adata = ad.AnnData(X=raw_counts.T)
-    adata.layers["raw_counts"] = raw_counts.values.T
+        if verbose: print(f'\tcreating `dds` object...')
+        
+        dds = DeseqDataSet(
+            counts=adata.to_df(),
+            metadata=adata.obs,
+            design_factors='',
+            refit_cooks=True,
+            inference=inference,
+            quiet=True
+        )
+        
+        dds.var = adata.var.copy()
 
-    adata.var = gene2name.set_index('gene_id').loc[adata.var.index,:]
+        dds.deseq2()
 
-    if verbose: print(f'counts for {adata.shape[1]} features and {adata.shape[0]} samples loaded successfully.')
+        if verbose: print(f'\tadding normalized counts to anndata object...')
 
-    return adata
+        adata.obs['size_factors'] = dds.obs['size_factors']
+        adata.layers['deseq2_normalized'] = dds.to_df().values
 
-
-def _read_squab_files(squab_dir, suffix, **kwargs):
-    files = glob(os.path.join(squab_dir, f"*{suffix}"))
-    dfs = []
-    for f in files:
-        sample_id = os.path.basename(f).replace(suffix, "")
-        df = pd.read_csv(f, sep="\t", **kwargs)
-        df.columns = [sample_id]
-        df.index.name = "gene_id"
-        dfs.append(df)
-
-    out = pd.concat(dfs, axis=1)
-
-    return out
+    else:
+        raise ValueError(f"Normalization method '{method}' not recognized. Please use 'deseq2'.")
